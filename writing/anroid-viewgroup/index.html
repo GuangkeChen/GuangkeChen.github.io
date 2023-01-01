@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Viewgroup布局管理器 | Guangke Chen</title>
+    <meta name="description" content="Guangke Chen&#39;s Website">
+    <link rel="icon" href="/profile.jpg">
+    
+    <link rel="preload" href="/assets/css/0.styles.4c55c34b.css" as="style"><link rel="preload" href="/assets/js/app.342de828.js" as="script"><link rel="preload" href="/assets/js/2.ce04b5c1.js" as="script"><link rel="preload" href="/assets/js/18.c183e11d.js" as="script"><link rel="prefetch" href="/assets/js/10.4de6bb22.js"><link rel="prefetch" href="/assets/js/11.b4d951b9.js"><link rel="prefetch" href="/assets/js/12.ac0bb6b0.js"><link rel="prefetch" href="/assets/js/13.2e337287.js"><link rel="prefetch" href="/assets/js/14.ef20c64d.js"><link rel="prefetch" href="/assets/js/15.66042235.js"><link rel="prefetch" href="/assets/js/16.02f0862b.js"><link rel="prefetch" href="/assets/js/17.62a81d10.js"><link rel="prefetch" href="/assets/js/19.abc7c4da.js"><link rel="prefetch" href="/assets/js/20.2036a592.js"><link rel="prefetch" href="/assets/js/21.00826860.js"><link rel="prefetch" href="/assets/js/3.34125f54.js"><link rel="prefetch" href="/assets/js/4.9dccd740.js"><link rel="prefetch" href="/assets/js/5.54adec9b.js"><link rel="prefetch" href="/assets/js/6.2f42f5ec.js"><link rel="prefetch" href="/assets/js/7.3ff23bd6.js"><link rel="prefetch" href="/assets/js/8.181dd4f2.js"><link rel="prefetch" href="/assets/js/9.c6c6e74f.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.4c55c34b.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container no-sidebar"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">Guangke Chen</span></a> <div class="links"><!----> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link">Home</a></div><div class="nav-item"><a href="/publication/" class="nav-link">Publication</a></div><div class="nav-item"><a href="/writing/" class="nav-link router-link-active">Writing</a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link">Home</a></div><div class="nav-item"><a href="/publication/" class="nav-link">Publication</a></div><div class="nav-item"><a href="/writing/" class="nav-link router-link-active">Writing</a></div> <!----></nav>  <!----> </aside> <main class="page"> <div class="theme-default-content content__default"><h3 id="布局管理器存在的意义">布局管理器存在的意义</h3> <p>不同的安卓手机，其分辨率、尺寸存在差异，为了能使Android应用的用户界面具有平台无关性，Android提供了布局管理器用于管理TextView、Button等组件（布局管理器可根据运行平台来调整组件的大小）。
+ViewGroup继承于View,它管理着Button等View组件的位置及大小，而其本身也是一个View组件（因此某个布局管理器可以嵌套到另一个布局管理器中）。</p> <h3 id="如何用布局管理器管理组件">如何用布局管理器管理组件</h3> <p><em>方法一</em>：直接使用xml布局文件，如下面的代码就在id为root的线性布局管理器（LinearLayout）中定义了一个Button
+main.xml</p> <pre><code>&lt;LinearLayout
+android:id=&quot;@+id/root&quot;
+android:orientation=&quot;vertical&quot;&gt;
+&lt;Button
+android:id=&quot;@+id/button
+android:layout_width=&quot;wrap_content&quot;
+android:layout_height=&quot;fill_parent&quot;/&gt;
+&lt;/LinearLayout&gt;
+</code></pre> <p><em>方法二</em>：xml和java代码混合使用，即先在xml中定义一个布局管理器，接着在java代码中使用addView()方法添加组件，实例代码如下：
+main.xml</p> <pre><code>&lt;RelativeLayout
+android:id=&quot;@+id&quot;=root
+android:layout_width=&quot;match_parent&quot;
+android:layout_height=&quot;match_parent&quot;&gt;
+&lt;/RelativeLayoout&gt;
+</code></pre> <p>main_activity.java(代码如有遮挡请拖动代码块查看)</p> <pre><code>setContentView(R.layout.main);//使main.xml中的布局能显示出来
+LinearLayout bowl=(ViewGroup)findViewById(R.id.root);
+Button bn=new Button(this);
+bn.setText(R.string.HelloWord);
+root.addView(bn);//添加组件
+</code></pre> <h3 id="布局管理器种类">布局管理器种类</h3> <p>布局管理器有以下种类：<strong>LinearLayout</strong>（线性布局）、<strong>RelativeLayout</strong>（相对布局）、<strong>TableLayout</strong>（表格布局）、帧布局（FrameLayout）、网格布局（GridLayout）</p> <h5 id="linearlayout-线性布局">LinearLayout 线性布局</h5> <p>线性布局将组件一个接一个排列起来，横向或是纵向排列由属性值<em>android:orientation</em>控制，实例如下：</p> <pre><code>android:orientation=&quot;vertical&quot;//组件纵向排列
+android:orientation=&quot;horizontal&quot;//组件横向排列
+</code></pre> <p><strong>注意：线性布局不会换行，当组件一个接一个排列到头后，剩下的组件将不会被显示出来</strong>
+还有一个比较重要的属性是android:gravity,它用于设置内部各组件的对齐方式，实例如下：</p> <pre><code>android:gravity=&quot;center_horizontal  //组件水平居中
+android:gravity=&quot;right|center_vertical   //组件出现在屏幕右方且垂直居中
+</code></pre> <h4 id="tablelayout表格布局">TableLayout表格布局</h4> <p>表格布局采用行和列的方式管理组件，行数和列数通过添加TableRow和各组件来确定，示例如下：</p> <pre><code>&lt;?xml version=&quot;1.0&quot;  encoding=&quot;utf-8&quot;?&gt;
+&lt;TableLayout           xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
+android:layout_width=&quot;match_parent&quot;
+android:layout_height=&quot;match_parent&quot;&gt;
+&lt;Button  android:id=&quot;@+id/bn1&quot;//按钮bn1占第一行
+ ......
+android:text=&quot;bn1&quot;/&gt;
+&lt;TableRow&gt;//TableRow占第二行
+&lt;Button  android:id=&quot;@+id/bn2&quot;    //bn2占据第二行的第一列
+......
+android:text=&quot;bn2&quot;/&gt;
+&lt;Button  android:id=&quot;@+id/bn3&quot;    //bn3占据第二行的第二列
+......
+android:text=&quot;bn3&quot;/&gt;
+&lt;/TableRow&gt;
+&lt;/TableLayout&gt;
+</code></pre> <h4 id="relativelayout相对布局">RelativeLayout相对布局</h4> <p>顾名思义，相对布局中的组件的位置相对其他组件来决定，示例如下：</p> <pre><code>&lt;TextView  android:layout_toRightOf=&quot;@id/bn1&quot;//该文本框位于id为bn1的按钮的右边
+android:layout_alignTop=&quot;@id/bn1  //该文本框与bn1顶部对齐
+android:layout_below=&quot;@id/bn2&quot;/&gt;&quot;//该文本框位于id为bn2的文本框的底部
+</code></pre> <h2 id="实战">实战</h2> <p>设计简单计算器的用户界面：</p> <pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;GridLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
+xmlns:tools=&quot;http://schemas.android.com/tools&quot;
+android:layout_width=&quot;match_parent&quot;
+android:layout_height=&quot;match_parent&quot;
+android:rowCount=&quot;9&quot;
+android:columnCount=&quot;4&quot;
+android:id=&quot;@+id/root&quot;
+tools:context=&quot;com.golfer.www.caculator.MainActivity&quot;&gt;
+&lt;TextView
+    android:layout_width=&quot;match_parent&quot;
+    android:layout_height=&quot;wrap_content&quot;
+    android:textSize=&quot;30pt&quot;
+    android:text=&quot;0&quot;
+    android:layout_rowSpan=&quot;4&quot;
+    android:layout_columnSpan=&quot;4&quot;
+    android:background=&quot;@drawable/textview&quot;
+    android:layout_marginBottom=&quot;16pt&quot;/&gt;
+&lt;Button
+       android:layout_width=&quot;wrap_content&quot;
+       android:layout_height=&quot;wrap_content&quot;
+       android:layout_marginBottom=&quot;10pt&quot;
+       android:layout_marginEnd=&quot;2pt&quot;
+       android:text=&quot;C&quot;
+       android:layout_marginLeft=&quot;2pt&quot;/&gt;
+&lt;Button
+    android:layout_width=&quot;wrap_content&quot;
+    android:layout_height=&quot;wrap_content&quot;
+    android:layout_marginBottom=&quot;10pt&quot;
+    android:layout_marginEnd=&quot;2pt&quot;
+    android:text=&quot;minus&quot;/&gt;
+&lt;Button
+    android:layout_width=&quot;wrap_content&quot;
+    android:layout_height=&quot;wrap_content&quot;
+    android:layout_marginBottom=&quot;10pt&quot;
+    android:layout_marginEnd=&quot;2pt&quot;
+    android:text=&quot;Del&quot;/&gt;
+&lt;Button
+    android:text=&quot;/&quot;
+    android:layout_width=&quot;wrap_content&quot;
+    android:layout_height=&quot;wrap_content&quot;
+    android:layout_marginBottom=&quot;10pt&quot;
+    android:layout_marginEnd=&quot;2pt&quot;/&gt;
+&lt;Button
+    android:text=&quot;7&quot;
+    android:layout_width=&quot;wrap_content&quot;
+    android:layout_height=&quot;wrap_content&quot;
+    android:layout_marginBottom=&quot;10pt&quot;
+    android:layout_marginEnd=&quot;2pt&quot;
+    android:layout_marginLeft=&quot;2pt&quot;/&gt;
+&lt;Button
+    android:text=&quot;8&quot;
+    android:layout_width=&quot;wrap_content&quot;
+    android:layout_height=&quot;wrap_content&quot;
+    android:layout_marginBottom=&quot;10pt&quot;
+    android:layout_marginEnd=&quot;2pt&quot;/&gt;
+&lt;Button
+    android:text=&quot;9&quot;
+    android:layout_width=&quot;wrap_content&quot;
+    android:layout_height=&quot;wrap_content&quot;
+    android:layout_marginBottom=&quot;10pt&quot;
+    android:layout_marginEnd=&quot;2pt&quot;/&gt;
+&lt;Button
+    android:text=&quot;X&quot;
+    android:layout_width=&quot;wrap_content&quot;
+    android:layout_height=&quot;wrap_content&quot;
+    android:layout_marginBottom=&quot;10pt&quot;
+    android:layout_marginEnd=&quot;2pt&quot;/&gt;
+&lt;Button
+    android:text=&quot;4&quot;
+    android:layout_width=&quot;wrap_content&quot;
+    android:layout_height=&quot;wrap_content&quot;
+    android:layout_marginBottom=&quot;10pt&quot;
+    android:layout_marginEnd=&quot;2pt&quot;
+    android:layout_marginLeft=&quot;2pt&quot;/&gt;
+&lt;Button
+    android:text=&quot;5&quot;
+    android:layout_width=&quot;wrap_content&quot;
+    android:layout_height=&quot;wrap_content&quot;
+    android:layout_marginBottom=&quot;10pt&quot;
+    android:layout_marginEnd=&quot;2pt&quot;/&gt;
+&lt;Button
+    android:text=&quot;6&quot;
+    android:layout_width=&quot;wrap_content&quot;
+    android:layout_height=&quot;wrap_content&quot;
+    android:layout_marginBottom=&quot;10pt&quot;
+    android:layout_marginEnd=&quot;2pt&quot;/&gt;
+&lt;Button
+    android:text=&quot;—&quot;
+    android:layout_width=&quot;wrap_content&quot;
+    android:layout_height=&quot;wrap_content&quot;
+    android:layout_marginBottom=&quot;10pt&quot;
+    android:layout_marginEnd=&quot;2pt&quot;/&gt;
+&lt;Button
+    android:text=&quot;1&quot;
+    android:layout_width=&quot;wrap_content&quot;
+    android:layout_height=&quot;wrap_content&quot;
+    android:layout_marginBottom=&quot;10pt&quot;
+    android:layout_marginEnd=&quot;2pt&quot;
+    android:layout_marginLeft=&quot;2pt&quot;/&gt;
+&lt;Button
+    android:text=&quot;2&quot;
+    android:layout_width=&quot;wrap_content&quot;
+    android:layout_height=&quot;wrap_content&quot;
+    android:layout_marginBottom=&quot;10pt&quot;
+    android:layout_marginEnd=&quot;2pt&quot;/&gt;
+&lt;Button
+    android:text=&quot;3&quot;
+    android:layout_width=&quot;wrap_content&quot;
+    android:layout_height=&quot;wrap_content&quot;
+    android:layout_marginBottom=&quot;10pt&quot;
+    android:layout_marginEnd=&quot;2pt&quot;/&gt;
+&lt;Button
+    android:text=&quot;+&quot;
+    android:layout_width=&quot;wrap_content&quot;
+    android:layout_height=&quot;wrap_content&quot;
+    android:layout_marginBottom=&quot;10pt&quot;
+    android:layout_marginEnd=&quot;2pt&quot;/&gt;
+&lt;Button
+    android:text=&quot;0&quot;
+    android:layout_width=&quot;wrap_content&quot;
+    android:layout_height=&quot;wrap_content&quot;
+    android:layout_marginBottom=&quot;10pt&quot;
+    android:layout_marginEnd=&quot;2pt&quot;/&gt;
+&lt;Button
+    android:text=&quot;.&quot;
+    android:layout_width=&quot;wrap_content&quot;
+    android:layout_height=&quot;wrap_content&quot;
+    android:layout_marginBottom=&quot;10pt&quot;
+    android:layout_marginEnd=&quot;2pt&quot;/&gt;
+&lt;Button
+    android:layout_height=&quot;wrap_content&quot;
+    android:layout_columnSpan=&quot;2&quot;
+    android:text=&quot;=&quot;
+    android:layout_width=&quot;80pt&quot; /&gt;
+ &lt;/GridLayout&gt;
+</code></pre> <p>界面如下图:
+<img src="http://upload-images.jianshu.io/upload_images/3008061-6f8c7a88e7d67d5c.png" alt="图片发自简书App">
+需要指出的是，这样直接在xml布局文件中定义各数字按钮显得代码冗余，我们应当采取xml布局文件和java代码混合的方式</p></div> <footer class="page-edit"><!----> <!----></footer> <!----> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.342de828.js" defer></script><script src="/assets/js/2.ce04b5c1.js" defer></script><script src="/assets/js/18.c183e11d.js" defer></script>
+  </body>
+</html>
