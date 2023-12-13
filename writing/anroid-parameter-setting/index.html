@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Andoid手机中的参数设置界面 | Guangke Chen</title>
+    <meta name="description" content="Guangke Chen&#39;s Website">
+    <link rel="icon" href="/profile.jpg">
+    
+    <link rel="preload" href="/assets/css/0.styles.e78307c0.css" as="style"><link rel="preload" href="/assets/js/app.5b9f3414.js" as="script"><link rel="preload" href="/assets/js/2.ce04b5c1.js" as="script"><link rel="preload" href="/assets/js/17.276aaeb3.js" as="script"><link rel="prefetch" href="/assets/js/10.4de6bb22.js"><link rel="prefetch" href="/assets/js/11.77220bf1.js"><link rel="prefetch" href="/assets/js/12.431ac391.js"><link rel="prefetch" href="/assets/js/13.deefa5ae.js"><link rel="prefetch" href="/assets/js/14.0ccd503d.js"><link rel="prefetch" href="/assets/js/15.856265a8.js"><link rel="prefetch" href="/assets/js/16.25910243.js"><link rel="prefetch" href="/assets/js/18.2676df13.js"><link rel="prefetch" href="/assets/js/19.abc7c4da.js"><link rel="prefetch" href="/assets/js/20.2036a592.js"><link rel="prefetch" href="/assets/js/21.00826860.js"><link rel="prefetch" href="/assets/js/3.34125f54.js"><link rel="prefetch" href="/assets/js/4.9dccd740.js"><link rel="prefetch" href="/assets/js/5.54adec9b.js"><link rel="prefetch" href="/assets/js/6.2f42f5ec.js"><link rel="prefetch" href="/assets/js/7.3f08fcc4.js"><link rel="prefetch" href="/assets/js/8.830b4ede.js"><link rel="prefetch" href="/assets/js/9.1d45842f.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.e78307c0.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container no-sidebar"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">Guangke Chen</span></a> <div class="links"><!----> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link">Home</a></div><div class="nav-item"><a href="/publication/" class="nav-link">Publication</a></div><div class="nav-item"><a href="/writing/" class="nav-link router-link-active">Writing</a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link">Home</a></div><div class="nav-item"><a href="/publication/" class="nav-link">Publication</a></div><div class="nav-item"><a href="/writing/" class="nav-link router-link-active">Writing</a></div> <!----></nav>  <!----> </aside> <main class="page"> <div class="theme-default-content content__default"><h3 id="引言">引言</h3> <p>android平台的手机上肯定会有如下图所示的“设置”快捷方式（要么在桌面上，要么在屏幕下拉列表中），点击进入设置界面后可以进行各种参数设置，如图所示。
+<img src="http://upload-images.jianshu.io/upload_images/3008061-18615f17a0b322bf.jpg" alt="&quot;设置&quot;快捷方式">
+下面带大家制作这个参数设置界面。</p> <h3 id="开发知识基础">开发知识基础</h3> <h5 id="preferenceactivity">PreferenceActivity</h5> <p><strong>PreferenceActivity</strong>间接继承自Activity，专门用于实现参数设置、存储界面
+PreferenceActivity和其他Activity的区别在于：</p> <h6 id="_1-preferenceactivity不使用普通的界面布局文件（以等标签开头），而是使用专门的选项设置的布局文件，示例如下：">1.PreferenceActivity不使用普通的界面布局文件（以<LinearLayout>等标签开头），而是使用专门的选项设置的布局文件，示例如下：</LinearLayout></h6> <p>普通界面布局文件：</p> <pre><code>&lt;LinearLayout  ......
+&lt;Button ....../&gt;
+......
+&lt;/LinearLayout&gt;
+</code></pre> <p>专门的选项设置的布局文件：</p> <pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;preference-headers xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;
+&lt;header    
+android:title=&quot;常规&quot;    
+android:summary=&quot;常规设置&quot;   
+android:fragment=&quot;com.golfer.www.parametersetting.PreferenceActivityTest$Fragment1&quot;/&gt;
+&lt;header    
+android:title=&quot;声音设置&quot;    
+android:summary=&quot;声音设置&quot; 
+android:fragment=&quot;com.golfer.www.parametersetting.PreferenceActivityTest$Fragment2&quot;/&gt;
+&lt;/preference-headers&gt;
+</code></pre> <p>需要指出的是
+普通的界面布局文件路径为<strong>res/layout/XXX.xml</strong>，而参数设置布局文件路径为<strong>res/xml/XXX.xml</strong></p> <h6 id="_2-preferenceactivity加载界面布局文件的方式不同">2.PreferenceActivity加载界面布局文件的方式不同</h6> <p>普通activity加载布局文件方式如下：</p> <pre><code>public void onCreate(Bundle savedInstanceState)  {  
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main)//activity.xml为待加载界面布局文件
+}
+</code></pre> <p>PreferenceActivity加载布局文件方式如下：</p> <pre><code>public void onBuildHeaders(List&lt;Header&gt; target) {       
+loadHeadersFromResource(R.xml.list_headers,target);
+}//list_headers是待加载布局文件
+</code></pre> <h5 id="activity与fragment">Activity与Fragment</h5> <p>为了说明Activity和Fragment的关系，我们先来看张图片
+<img src="http://upload-images.jianshu.io/upload_images/3008061-db400e6c63011f39.jpg" alt="Fragment是Activity的片段">
+图片左边是不同新闻类型的名称，当我们点击其中一个后右边会显示该种类型的新闻。Activity是我们看到的整个界面，而左右两边分别两个Fragment。
+因此，其实<strong>Fragment是Activity的片段</strong>（fragment译为“片段”），一个Activity可以包含多个Fragment</p> <p>如何指定某一Activity包含哪些Fragment呢？
+*方法一（动态）：*在Activity的java文件中使用如下方法：</p> <pre><code>add(com.golfer.www.parametersetting.PreferenceActivityTest$Fragment1)
+//参数指定了要增加的Fragment的路径及名称，
+//其中com.golfer.www.parametersetting为包名
+//PreferenceActivityTest.java中定义了多个Fragment，
+//$表示增加其中名称为Fragment1的那个Fragment)
+
+remove()//参数省略
+replace()//参数省略
+</code></pre> <p>*方法二（静态）：*在Activity的界面布局文件中</p> <pre><code>android:fragment=&quot;com.golfer.www.parametersetting.Pr  
+eferenceActivityTest$Fragment1&quot;
+</code></pre> <p>对应地，<strong>PreferenceActivity和PreferenceFragment往往配合使用</strong>
+其中，PreferenceActivity的布局文件负责显示选项设置列表，而PreferenceFragment的布局文件负责显示具体的参数设置选项（即点击选项设置列表其中一项后显示的界面）</p> <p>Fragment和Activity一样（我们在理解时可以把Fragment理解为和Activity同地位），有自己的布局文件和Java实现文件，下面详细讲解PreferenceFragment的布局文件：</p> <pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;  
+&lt;PreferenceScreen  xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;
+&lt;PreferenceCategory android:title=&quot;声音模式&quot;&gt; 
+&lt;ListPreference        
+android:title=&quot;音量&quot;        
+android:summary=&quot;选择低、中、高音量&quot;
+android:icon=&quot;@drawable/yinliang&quot;      
+android:entries=&quot;@array/size_name&quot;         
+android:dialogTitle=&quot;音量选择&quot;      
+android:entryValues=&quot;@array/size_value&quot;/&gt;      
+&lt;CheckBoxPreference       
+android:title=&quot;静音模式&quot;   
+android:icon=&quot;@drawable/noyinliang&quot;    
+android:summaryOn=&quot;开启&quot;       
+android:summaryOff=&quot;关闭&quot;      
+android:defaultValue=&quot;false&quot; /&gt;      
+&lt;/PreferenceCategory&gt;    
+&lt;PreferenceCategory android:title=&quot;铃音和通知&quot;&gt;
+&lt;RingtonePreference            
+android:title=&quot;来电铃声&quot;            
+android:summary=&quot;选择铃声&quot;    
+android:icon=&quot;@drawable/call&quot;   &gt;  
+&lt;/RingtonePreference&gt;        
+ &lt;/PreferenceCategory&gt;
+&lt;/PreferenceScreen&gt;
+</code></pre> <p>其中，PreferenceCategory元素用于对参数选项进行分组（即同一类型的参数设置归为同一组，比如来电铃声设置、短信铃声设置、其他通知铃声设置就可以分为一组），用android:title指定参数组名，里面再包含具体的参数设置。</p> <p>RingtonePreference元素：
+点击该元素后系统会调用手机原有的铃声设置模块</p> <p>CheckBoxPreference元素：
+该元素旁边有选择框，勾选后会在标题下方显示summaryOn对应的字符，没有勾选则显示summaryOff对应的字符</p> <p>ListPreference元素：
+点击该元素后，会弹出一个名称为dialogTitle对应的字符的列表对话框，可在里面选择其中一项，如示例的高音量、中音量、低音量</p> <p>注：如何设置弹出的列表对话框显示什么内容呢？
+步骤：
+1.在res/values下添加arrays.xml<br>
+2.编辑arrays.xml，代码示例如下：</p> <pre><code>&lt;resources&gt;    
+&lt;string-array name=&quot;size_name&quot;&gt;      
+&lt;item&gt;&quot;低音量&quot;&lt;/item&gt;      
+&lt;item&gt;中音量&lt;/item&gt;       
+&lt;item&gt;高音量&lt;/item&gt;   
+&lt;/string-array&gt;
+
+&lt;string-array name=&quot;size_value&quot;&gt;      
+&lt;item&gt;&quot;低音量&quot;&lt;/item&gt;      
+&lt;item&gt;中音量&lt;/item&gt;       
+&lt;item&gt;高音量&lt;/item&gt;   
+&lt;/string-array&gt;
+&lt;/resources&gt;
+</code></pre> <p>3.在ListPreference中键入：</p> <pre><code>android:entries=&quot;@array/size_name&quot;
+android:entryValues=&quot;@array/size_value&quot;
+//注意不要写成@arrays，否则会报错，
+类似地，字符串资源文件命名为strings.xml，
+但引用字符串时写成@string/app_name
+</code></pre> <p>写完布局文件后，如何在PreferenceFragment的java文件中加载对应的布局文件呢？示例如下：</p> <pre><code>public static class Fragment1 extends PreferenceFragment {//指明继承关系   
+    public void onCreate(Bundle savedInstanceState) {                    
+      super.onCreate(savedInstanceState);       
+      addPreferencesFromResource(R.xml.XXX); //关键方法，R.xml.XXX为待加载的布局 文件  }
+}
+</code></pre> <h5 id="实战">实战</h5> <p>有了上面的知识，开始开发</p> <p>PreferenceActivity（命名为PreferenceActivityTest)的界面布局文件（负责显示选项设置列表）</p> <pre><code>                    list_headers.xml
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;preference-headers xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;
+&lt;header    
+android:title=&quot;常规&quot;    
+android:summary=&quot;常规设置&quot;  
+android:fragment=&quot;com.golfer.www.parametersetting.PreferenceActivityTest$Fragment1&quot;/&gt;
+&lt;header    
+android:title=&quot;声音设置&quot;    
+android:summary=&quot;声音设置&quot;        
+android:fragment=&quot;com.golfer.www.parametersetting.PreferenceActivityTest$Fragment2&quot;/&gt;    
+&lt;header        
+android:title=&quot;显示&quot;       
+android:summary=&quot;显示设置&quot;  
+android:fragment=&quot;com.golfer.www.parametersetting.PreferenceActivityTest$Fragment3&quot;/&gt;
+&lt;/preference-headers&gt;
+</code></pre> <p>PreferenceActivity（命名为PreferenceActivityTest)的java文件（PreferenceFragment的java定义嵌入其中，作为内部类）</p> <pre><code>             PreferenceActivityTest.java
+package com.golfer.www.parametersetting;
+import android.app.Fragment;
+import android.os.Bundle;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceFragment;
+import java.util.List;
+public class PreferenceActivityTest extends PreferenceActivity {   
+ @Override    
+protected void onCreate(Bundle savedInstanceState) {   
+ super.onCreate(savedInstanceState);}    
+public void onBuildHeaders(List&lt;Header&gt; target)   
+ { loadHeadersFromResource(R.xml.list_headers,target); }   
+ public boolean isValidFragment(String FragmentName)   
+ {  return true; }   
+public static class Fragment1 extends PreferenceFragment {            
+public void onCreate(Bundle savedInstanceState) 
+{ super.onCreate(savedInstanceState);                   
+  addPreferencesFromResource(R.xml.regular);  }
+}       
+public static class Fragment2 extends  PreferenceFragment {          
+ public void onCreate(Bundle savedInstanceState) { 
+ super.onCreate(savedInstanceState);        
+ addPreferencesFromResource(R.xml.sound);}       
+ }        
+public static class Fragment3 extends     
+PreferenceFragment{            
+public void onCreate(Bundle savedInstanceState) {                    
+super.onCreate(savedInstanceState);  
+addPreferencesFromResource(R.xml.display); }                
+}  
+}
+</code></pre> <p>PreferenceFragment（以Fragment1的布局文件sound.xml为例）的布局文件（负责显示具体的参数设置选项）</p> <pre><code>                       sound.xml
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;    
+&lt;PreferenceScreen  xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;
+&lt;PreferenceCategory android:title=&quot;声音模式&quot;&gt;        
+&lt;ListPreference        
+android:title=&quot;音量&quot;            
+android:summary=&quot;选择低、中、高音量&quot;            
+android:icon=&quot;@drawable/yinliang&quot;          
+android:entries=&quot;@array/size&quot;        
+android:dialogTitle=&quot;音量选择&quot;        
+android:entryValues=&quot;@array/Size&quot;/&gt;   
+&lt;CheckBoxPreference      
+ android:title=&quot;静音模式&quot;       
+android:icon=&quot;@drawable/noyinliang&quot;       
+android:summaryOn=&quot;开启&quot;       
+android:summaryOff=&quot;关闭&quot;       
+android:defaultValue=&quot;false&quot; /&gt;       
+&lt;/PreferenceCategory&gt;    
+&lt;PreferenceCategory android:title=&quot;铃音和通知&quot;&gt;        
+&lt;RingtonePreference            
+android:title=&quot;来电铃声&quot;                    
+android:summary=&quot;选择铃声&quot;            
+android:icon=&quot;@drawable/call&quot; &gt;    
+&lt;/RingtonePreference&gt;        
+&lt;RingtonePreference            
+android:title=&quot;信息铃声&quot;                
+android:summary=&quot;选择铃声&quot;            
+android:icon=&quot;@drawable/text&quot;   &gt;        
+&lt;/RingtonePreference&gt;        
+&lt;RingtonePreference            
+android:title=&quot;其他通知铃声&quot;                
+android:summary=&quot;选择铃声&quot;            
+android:icon=&quot;@drawable/inform&quot;  &gt;            
+&lt;/RingtonePreference&gt;        
+&lt;CheckBoxPreference            
+android:title=&quot;响铃时振动&quot;                
+android:icon=&quot;@drawable/zhendong&quot;            
+android:summaryOff=&quot;关闭&quot;            
+android:summaryOn=&quot;开启&quot;            
+android:defaultValue=&quot;true&quot;&gt;        
+&lt;/CheckBoxPreference&gt;    
+&lt;/PreferenceCategory&gt;
+&lt;/PreferenceScreen&gt;
+</code></pre> <p>成果演示：</p> <p><img src="http://upload-images.jianshu.io/upload_images/3008061-3864b84044dd4a5c.jpg" alt="列表界面"></p> <p><img src="http://upload-images.jianshu.io/upload_images/3008061-aa2f2a5ac6d989ce.png" alt="声音设置界面"></p> <p><img src="http://upload-images.jianshu.io/upload_images/3008061-62721f875bcbd29f.png" alt="音量选择对话框"> <img src="http://upload-images.jianshu.io/upload_images/3008061-0844b2b0b48e2ea9.jpg" alt="开启静音模式"> <img src="http://upload-images.jianshu.io/upload_images/3008061-0ac813730aff6233.png" alt="铃声设置"> <img src="http://upload-images.jianshu.io/upload_images/3008061-7d5a5557bcd4594b.jpg" alt="关闭振动"></p></div> <footer class="page-edit"><!----> <!----></footer> <!----> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.5b9f3414.js" defer></script><script src="/assets/js/2.ce04b5c1.js" defer></script><script src="/assets/js/17.276aaeb3.js" defer></script>
+  </body>
+</html>

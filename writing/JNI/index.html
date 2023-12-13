@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>JNI实现JAVA调用C/C++开源库 | Guangke Chen</title>
+    <meta name="description" content="Guangke Chen&#39;s Website">
+    <link rel="icon" href="/profile.jpg">
+    
+    <link rel="preload" href="/assets/css/0.styles.e78307c0.css" as="style"><link rel="preload" href="/assets/js/app.5b9f3414.js" as="script"><link rel="preload" href="/assets/js/2.ce04b5c1.js" as="script"><link rel="preload" href="/assets/js/14.0ccd503d.js" as="script"><link rel="prefetch" href="/assets/js/10.4de6bb22.js"><link rel="prefetch" href="/assets/js/11.77220bf1.js"><link rel="prefetch" href="/assets/js/12.431ac391.js"><link rel="prefetch" href="/assets/js/13.deefa5ae.js"><link rel="prefetch" href="/assets/js/15.856265a8.js"><link rel="prefetch" href="/assets/js/16.25910243.js"><link rel="prefetch" href="/assets/js/17.276aaeb3.js"><link rel="prefetch" href="/assets/js/18.2676df13.js"><link rel="prefetch" href="/assets/js/19.abc7c4da.js"><link rel="prefetch" href="/assets/js/20.2036a592.js"><link rel="prefetch" href="/assets/js/21.00826860.js"><link rel="prefetch" href="/assets/js/3.34125f54.js"><link rel="prefetch" href="/assets/js/4.9dccd740.js"><link rel="prefetch" href="/assets/js/5.54adec9b.js"><link rel="prefetch" href="/assets/js/6.2f42f5ec.js"><link rel="prefetch" href="/assets/js/7.3f08fcc4.js"><link rel="prefetch" href="/assets/js/8.830b4ede.js"><link rel="prefetch" href="/assets/js/9.1d45842f.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.e78307c0.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container no-sidebar"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">Guangke Chen</span></a> <div class="links"><!----> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link">Home</a></div><div class="nav-item"><a href="/publication/" class="nav-link">Publication</a></div><div class="nav-item"><a href="/writing/" class="nav-link router-link-active">Writing</a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link">Home</a></div><div class="nav-item"><a href="/publication/" class="nav-link">Publication</a></div><div class="nav-item"><a href="/writing/" class="nav-link router-link-active">Writing</a></div> <!----></nav>  <!----> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="一、前言">一、前言</h1> <p><strong>JNI(Java Native Interface)</strong> 的作用是实现java调用C/C++写的方法或开源库。由于java语言自身的局限性，一些特定功能的开源库往往是没有java语言版本的，比如本人项目中需要用到DSP库，DSP库C/C++的开源库数不胜数，但是JAVA版本的根本找不到，但是我的项目需要开发出一款app，因此必须使用java编程。为了解决这个矛盾，JNI就派上用场了。
+本文将结合基于C++的DSP开源库SP++3.0中的傅立叶变换方法讲解JNI编程方法和常见错误及其解决方法。</p> <h1 id="二、具体过程">二、具体过程</h1> <h2 id="_1-编写java代码">1.编写java代码</h2> <p>本文涉及两个java文件，一个声明java native方法，另一个含有主函数main，代码如下：</p> <pre><code>class testjava
+{
+//java文件只需要声明方法即可，具体实现在c或cpp文件中
+public native double[] fft(double[] xn); //返回的数组的前半部分是傅立叶系数的实部,
+//后半部分是虚部，方法需用native修饰
+static {//必须用static修饰
+	System.loadLibrary(&quot;javadll&quot;);//加载动态库dll，不需要后缀名
+}
+}
+</code></pre> <hr> <pre><code>public class main
+{
+public static void main(String[] args){
+  testjava fourier=new testjava();
+  int len=100;
+	double[] x=new double[len];
+	int j=0;
+	for(double t=0;t&lt;len;t++){
+		x[j++]=Math.cos(2*Math.PI*t);
+	}
+	double[]Xk=new double[2*len];
+	Xk=fourier.fft(x);//调用fft方法
+	for(int i=0;i&lt;len;i++){
+		System.out.println(Xk[i]+&quot;  &quot;+Xk[i+len]);
+	}
+}
+}
+</code></pre> <h2 id="_2-编译testjava-java，并生成-h头文件">2.编译testjava.java，并生成.h头文件</h2> <p>本文全程使用cmd命令行，使用IDE方法类似，具体操作有细微区别</p> <h3 id="_2-1-cd命令切换至java文件所在目录后使用javac命令编译，生成testjava-class">2.1 cd命令切换至java文件所在目录后使用javac命令编译，生成testjava.class</h3> <pre><code>cd D:\java
+javac testjava.java
+</code></pre> <h3 id="_2-2-使用javah命令生成testjava-h头文件">2.2 使用javah命令生成testjava.h头文件</h3> <p>这里需要注意的是，如果java文件所在路径没有添加进classpath环境变量中，cmd命令为</p> <pre><code>javah -classpath . testjava//注意中间有一个英文句号
+</code></pre> <h2 id="_3-编写c-c-实现">3.编写C/C++实现</h2> <h3 id="_3-1-头文件添加">3.1 头文件添加</h3> <p>首先要把需要用到的头文件jni.h，jni_md.h(jni.h需要用到)，testjava.h，以及和傅立叶变换方法有关的fftpf.h，vectormath.h复制到cpp文件所在路径，当然也可以放到  VS2010的安装路径\VC\include。其中jni.h、jni_md.h在JDK安装路径下的include文件夹里</p> <h3 id="_3-2-方法实现">3.2 方法实现</h3> <pre><code>javadll.cpp
+#include &lt;iostream&gt;
+#include &lt;cstdlib&gt;
+#include&lt;stdio.h&gt;
+
+#include &lt;jni.h&gt;
+#include &lt;fftpf.h&gt;
+#include &lt;vectormath.h&gt;
+#include &quot;testjava.h&quot;
+
+using namespace std;
+using namespace splab;
+
+JNIEXPORT jdoubleArray JNICALL Java_testjava_fft
+  (JNIEnv *env, jobject jo, jdoubleArray xn){
+  jsize len=env-&gt;GetArrayLength(xn); //获取数组长度
+  jdouble *p = env-&gt;GetDoubleArrayElements(xn,0); 
+  Vector&lt;double&gt; signal(len,p);
+  FFTPF&lt;double&gt; Fourier;
+  Vector&lt;complex&lt;double&gt;&gt;  XK;
+  XK.resize(len);
+  Fourier.fft(signal,XK);
+  Vector&lt;double&gt; a;
+  Vector&lt;double&gt; b;
+  a.resize(len);
+  b.resize(len);
+  a=real(XK);
+  b=imag(XK);
+  jdoubleArray result;
+  result=env-&gt;NewDoubleArray(2*len);
+  jdouble *p2 = env-&gt;GetDoubleArrayElements(result,0);  
+  for(int i=0;i&lt;XK.size();i++){
+	  p2[i]=a[i];
+  }
+  for(int i=XK.size();i&lt;2*len;i++){
+	  p2[i]=b[i-XK.size()];
+  }
+  env-&gt;ReleaseDoubleArrayElements(xn,p,0);
+  env-&gt;ReleaseDoubleArrayElements(result,p2,0);
+  return result;
+}
+</code></pre> <p>对比我们在testjava.java和testjava.h中的函数声明（如下），我们发现java中的double[]变为了jdoubleArray，这里怎么理解呢？可以这样理解，在C/C++中，既可以使用C/C++原本的数据类型，又可以使用jdoubleArray这些数据类型。其他数据类型的对应关系以及jint、jObjectArray、jsize这类数据的操作方法见附件（很好的一份文档）。特别要注意的是文档中提到的C和C++语法的差异，比如javadll.cpp中有注释的一行，如果是使用C语言，则应写为</p> <pre><code>  jsize len=(*env)-&gt;GetArrayLength(env,xn); //获取数组长度
+</code></pre> <p>很好理解，这是因为C++是面向对象的，有类这一概念</p> <pre><code>testjava.h中的函数声明
+JNIEXPORT jdoubleArray JNICALL Java_testjava_fft
+  (JNIEnv *, jobject, jdoubleArray);//testjava.h中输入参数是没有参数名的，
+//在javadll.cpp中实现方法时应当加上参数名
+</code></pre> <hr> <pre><code>testjava.java中的函数声明
+public native double[] fft(double[] xn);
+</code></pre> <h2 id="_4-编译cpp文件得到动态链接库文件javadll-dll">4.编译cpp文件得到动态链接库文件javadll.dll</h2> <p>cd命令切换到VS2010安装路径\VC\bin\amd64，之后输入vcvars64并回车启动编译器
+再切换至cpp文件所在路径，之后使用cl命令生成dll文件</p> <pre><code>cl -LD javadll.cpp
+</code></pre> <p>之后可以在cpp所在路径下看到生成了javadll.dll，javadll.lib等文件
+在这个过程中，需要注意的是dll的位数和所安装的JDK的位数要一致，否则下一步运行时会报错。
+具体来说，VS2010的安装路径下有两个编译器，分别是32位和64位的，64位的路径见上面,32位的路径为VS2010的安装路径\Common7\Tools\vcvars32
+如果你的JDK是64位的，就要使用vcvars64，否则使用vcvars32。JDK版本可以通过命令行的java -version命令获得，若执行命令后出现64-bits，则为64位，没出现的为32位。
+如果你是使用IDE，不是cmd，怎么办呢？见文末附件。</p> <h2 id="_5-运行java程序">5.运行java程序</h2> <p>首先要把javadll.dll复制到java文件所在路径并切换至java文件所在路径，其次用javac命令编译，java命令运行。
+javac命令编译时注意，testjava.java和main.java需要一起编译，否则会报错。</p> <pre><code>javac *.java
+</code></pre> <p>最后运行，</p> <pre><code>java -classpath . main
+</code></pre> <p>引入-classpath的原因和javah命令一样
+运行截图：</p> <p><img src="http://upload-images.jianshu.io/upload_images/3008061-3cad775b22fff281.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="cos(2pit)的傅立叶系数"></p> <h2 id="_6-附件">6.附件</h2> <p>1.附件1讲解了JNI的常见操作方法
+http://www.doc88.com/p-403985462945.html
+2.附件2是Youtube视频，讲解了cmd模式下的jni编程示例
+https://www.youtube.com/watch?v=tDhOPYi-rYE&amp;spfreload=1
+3.附件3是本人自己写的用VS2010创建dll的过程以及Eclipse中如何修改只单个项目所用的JDK版本而不用改变本机的JDK版本。
+链接: https://pan.baidu.com/s/1o8A0OOi   密码: 238d</p></div> <footer class="page-edit"><!----> <!----></footer> <!----> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.5b9f3414.js" defer></script><script src="/assets/js/2.ce04b5c1.js" defer></script><script src="/assets/js/14.0ccd503d.js" defer></script>
+  </body>
+</html>
